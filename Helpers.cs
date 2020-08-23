@@ -8,7 +8,7 @@ namespace SE_PlayerGrace
 {
     public class Helpers
     {
-        public static readonly Logger Log = LogManager.GetCurrentClassLogger();
+        public static readonly Logger Log = LogManager.GetLogger("PlayerGrace");
 
         public static long GetPlayerIdByName(string name)
         {
@@ -38,7 +38,6 @@ namespace SE_PlayerGrace
                     if (playerData.PlayerId == identity.IdentityId)
                     {
                         identity.LastLoginTime = DateTime.Now;
-                        Log.Info($"Player {playerData.PlayerName} applied new gracedate. Last logout was {identity.LastLogoutTime}");
                     }
 
                     // Remove Players that has logged back in
@@ -48,8 +47,7 @@ namespace SE_PlayerGrace
                     {
                         GracePlugin.Plugin.Config.PlayersOnLeave.Remove(playerData);
                         GracePlugin.Plugin.Save();
-                        Log.Warn(
-                            $"Player {playerData.PlayerName} was removed. Last logout was {identity.LastLogoutTime}");
+                        Log.Info($"Player {playerData.PlayerName} was removed. Last logout was {identity.LastLogoutTime}");
                     }
                 }
             }
@@ -84,7 +82,7 @@ namespace SE_PlayerGrace
 
         public static void AddPlayerToConf(PlayerData player)
         {
-            GracePlugin.Plugin.Config.PlayersOnLeave.Add(new PlayerData // Add the new player
+            GracePlugin.Plugin.Config.PlayersOnLeave.Add(new PlayerData
             {
                 PlayerId = player.PlayerId,
                 PlayerName = player.PlayerName,

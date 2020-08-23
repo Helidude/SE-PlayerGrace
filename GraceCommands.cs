@@ -9,7 +9,7 @@ namespace SE_PlayerGrace
 {
     public class GraceCommands : CommandModule
     {
-        public static readonly Logger Log = LogManager.GetLogger("GraceCommands");
+        public static readonly Logger Log = LogManager.GetLogger("PlayerGrace");
 
         [Command("grace add", "Grant a player extended leave")]
         [Permission(MyPromoteLevel.SpaceMaster)]
@@ -76,6 +76,7 @@ namespace SE_PlayerGrace
                 if (playerData.PlayerId != playerId) continue;
                 Helpers.RemovePlayerFromConf(playerData);
                 Context.Respond($"Player {playerName} successfully removed");
+                Log.Info($"{playerName} successfully removed");
             }
         }
 

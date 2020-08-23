@@ -17,7 +17,7 @@ namespace SE_PlayerGrace
     public class GracePlugin : TorchPluginBase
     {
         // Attach NLog
-        public static readonly Logger Log = LogManager.GetCurrentClassLogger();
+        public static readonly Logger Log = LogManager.GetLogger("PlayerGrace");
 
         public static GracePlugin Plugin { get; set; }
 
