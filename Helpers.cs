@@ -3,8 +3,6 @@ using Sandbox.Game.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SE_PlayerGrace
 {
@@ -28,33 +26,11 @@ namespace SE_PlayerGrace
             return 0;
         }
 
-        //public static void RefreshGraceList()
-        //{
-        //    //if (GracePlugin.Plugin.Config.PlayersOnLeave == null || MySession.Static == null)
-        //    //    return;
-        //    PlayersLists.GraceList.Clear();
-
-        //    foreach (var player in GracePlugin.Plugin.Config.PlayersOnLeave)
-        //    {
-        //        // Add Players from file to List<PlayerData>
-        //        PlayersLists.GraceList.Add(new PlayerData
-        //        {
-        //            PlayerId = player.PlayerId,
-        //            PlayerName = player.PlayerName,
-        //            GraceGrantedAt = player.GraceGrantedAt
-        //        });
-        //    }
-
-        //    //if (comboboxPlayers != null)
-        //    //comboboxPlayers.ItemsSource = GetPlayers.GetAllPlayers().Select(x => x.DisplayName);
-        //}
-
         public static void ApplySession()
         {
-            //if (GracePlugin.Plugin.Config.PlayersOnLeave == null || MySession.Static == null)
-            //    return;
+            if (GracePlugin.Plugin.Config.PlayersOnLeave == null || MySession.Static == null)
+                return;
 
-            // TODO - Rewrite with Linq
             foreach (MyIdentity identity in MySession.Static.Players.GetAllIdentities())
             {
                 foreach (var playerData in GracePlugin.Plugin.Config.PlayersOnLeave.ToList())
@@ -98,35 +74,24 @@ namespace SE_PlayerGrace
 
         public static void RemovePlayerFromConf(PlayerData player)
         {
-            var playerData = GracePlugin.Plugin.Config.PlayersOnLeave.ToList();
+            var itemToRemove = GracePlugin.Plugin.Config.PlayersOnLeave.SingleOrDefault(p => p.PlayerId == player.PlayerId);
 
-            {
-                foreach (var data in playerData)
-                {
-                    if (player.PlayerId == data.PlayerId)
-                    {
-                        GracePlugin.Plugin.Config.PlayersOnLeave.Remove(data);
-                    }
-                }
-
-                GracePlugin.Plugin.Save();
-                GraceList();
-            }
+            GracePlugin.Plugin.Config.PlayersOnLeave.Remove(itemToRemove);
+            GracePlugin.Plugin.Save();
+            GraceList();
         }
 
         public static void AddPlayerToConf(PlayerData player)
         {
+            GracePlugin.Plugin.Config.PlayersOnLeave.Add(new PlayerData // Add the new player
             {
-                GracePlugin.Plugin.Config.PlayersOnLeave.Add(new PlayerData // Add the new player
-                {
-                    PlayerId = player.PlayerId,
-                    PlayerName = player.PlayerName,
-                    GraceGrantedAt = DateTime.Now
-                });
+                PlayerId = player.PlayerId,
+                PlayerName = player.PlayerName,
+                GraceGrantedAt = DateTime.Now
+            });
 
-                GracePlugin.Plugin.Save();
-                GraceList();
-            }
+            GracePlugin.Plugin.Save();
+            GraceList();
         }
     }
 }

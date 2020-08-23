@@ -11,7 +11,6 @@ using Torch.API.Session;
 using Torch.API.Managers;
 using Torch.Session;
 using System.Threading;
-using Sandbox;
 
 namespace SE_PlayerGrace
 {
@@ -37,7 +36,6 @@ namespace SE_PlayerGrace
         public override void Init(ITorchBase torch)
         {
             base.Init(torch);
-            Plugin = this;
 
             var sessionManager = Torch.Managers.GetManager<TorchSessionManager>();
             if (sessionManager != null)
@@ -46,6 +44,7 @@ namespace SE_PlayerGrace
                 Log.Warn("No session manager loaded!");
 
             SetupConfig();
+            Plugin = this;
         }
 
         private void SessionChanged(ITorchSession session, TorchSessionState state)
