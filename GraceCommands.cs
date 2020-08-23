@@ -78,5 +78,22 @@ namespace SE_PlayerGrace
                 Context.Respond($"Player {playerName} successfully removed");
             }
         }
+
+        [Command("grace list", "List players on leave")]
+        [Permission(MyPromoteLevel.SpaceMaster)]
+        public void GraceList()
+        {
+            if (Helpers.GraceList().Count == 0)
+            {
+                Context.Respond($"Could not find any players");
+                return;
+            }
+
+            Context.Respond($"Players on leave:");
+            foreach (var players in Helpers.GraceList())
+            {
+                Context.Respond($"{players.PlayerName} ");
+            }
+        }
     }
 }
