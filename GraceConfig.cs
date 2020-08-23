@@ -22,5 +22,8 @@ namespace SE_PlayerGrace
 
         private DateTime _playerGraceGrantedAt;
         public DateTime GraceGrantedAt { get => _playerGraceGrantedAt; set => SetValue(ref _playerGraceGrantedAt, value); }
+
+        private bool _persistPlayer;
+        public bool PersistPlayer { get => _persistPlayer; set => SetValue(ref _persistPlayer, value); }
     }
 }

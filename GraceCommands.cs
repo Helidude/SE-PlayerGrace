@@ -27,8 +27,33 @@ namespace SE_PlayerGrace
             {
                 PlayerId = playerId,
                 PlayerName = playerName,
-                GraceGrantedAt = DateTime.Now
+                GraceGrantedAt = DateTime.Now,
+                PersistPlayer = false
             });
+
+            Context.Respond($"{playerName} successfully added");
+            Log.Info($"{playerName} successfully added");
+        }
+
+        [Command("grace add persist", "Grant a player extended leave that will not be automaticly removed (if enabled)")]
+        [Permission(MyPromoteLevel.SpaceMaster)]
+        public void GracePersist(string playerName)
+        {
+            var playerId = Helpers.GetPlayerIdByName(playerName);
+
+            if (Helpers.GraceList().Any(i => i.PlayerId == playerId) || playerId == 0)
+            {
+                Context.Respond($"{playerName} already added or does not exist");
+                return;
+            }
+
+            Helpers.AddPlayerToConf(new PlayerData // Add the new player
+            {
+                PlayerId = playerId,
+                PlayerName = playerName,
+                GraceGrantedAt = DateTime.Now,
+                PersistPlayer = true
+            }); ;
 
             Context.Respond($"{playerName} successfully added");
             Log.Info($"{playerName} successfully added");

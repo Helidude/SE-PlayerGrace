@@ -65,7 +65,8 @@ namespace SE_PlayerGrace
                 {
                     PlayerId = data.PlayerId,
                     PlayerName = data.PlayerName,
-                    GraceGrantedAt = data.GraceGrantedAt
+                    GraceGrantedAt = data.GraceGrantedAt,
+                    PersistPlayer = data.PersistPlayer
                 });
             }
 
@@ -87,7 +88,8 @@ namespace SE_PlayerGrace
             {
                 PlayerId = player.PlayerId,
                 PlayerName = player.PlayerName,
-                GraceGrantedAt = DateTime.Now
+                GraceGrantedAt = DateTime.Now,
+                PersistPlayer = player.PersistPlayer
             });
 
             GracePlugin.Plugin.Save();
