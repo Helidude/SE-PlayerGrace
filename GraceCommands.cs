@@ -11,6 +11,24 @@ namespace SE_PlayerGrace
     {
         public static readonly Logger Log = LogManager.GetLogger("PlayerGrace");
 
+        [Command("grace toggle", "Toggle AutoRemove State")]
+        [Permission(MyPromoteLevel.SpaceMaster)]
+        public void GraceToggle()
+        {
+            if (GracePlugin.Plugin.Config.AutoRemove)
+            {
+                GracePlugin.Plugin.Config.AutoRemove = false;
+                Context.Respond($"AutoRemove set to false");
+            }
+            else
+            {
+                GracePlugin.Plugin.Config.AutoRemove = true;
+                Context.Respond($"AutoRemove set to true");
+            }
+
+            GracePlugin.Plugin.Save();
+        }
+
         [Command("grace add", "Grant a player extended leave")]
         [Permission(MyPromoteLevel.SpaceMaster)]
         public void GraceAdd(string playerName)
@@ -35,7 +53,7 @@ namespace SE_PlayerGrace
             Log.Info($"{playerName} successfully added");
         }
 
-        [Command("grace add persist", "Grant a player extended leave that will not be automaticly removed (if enabled)")]
+        [Command("grace add persist", "Grant a player extended leave. Player will not be affected by AutoRemove")]
         [Permission(MyPromoteLevel.SpaceMaster)]
         public void GracePersist(string playerName)
         {
@@ -59,7 +77,7 @@ namespace SE_PlayerGrace
             Log.Info($"{playerName} successfully added");
         }
 
-        [Command("grace remove", "Revoke players extended leave")]
+        [Command("grace remove", "Revoke a players extended leave")]
         [Permission(MyPromoteLevel.SpaceMaster)]
         public void GraceRemove(string playerName)
         {
@@ -86,11 +104,11 @@ namespace SE_PlayerGrace
         {
             if (Helpers.GraceList().Count == 0)
             {
-                Context.Respond($"Could not find any players");
+                Context.Respond($"Could not find any players. AutoRemove is {GracePlugin.Plugin.Config.AutoRemove}");
                 return;
             }
 
-            Context.Respond($"Players on leave:");
+            Context.Respond($"AutoRemove is {GracePlugin.Plugin.Config.AutoRemove}! Players on leave:");
             foreach (var players in Helpers.GraceList())
             {
                 Context.Respond($"{players.PlayerName} ");
