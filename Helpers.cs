@@ -43,7 +43,8 @@ namespace SE_PlayerGrace
                     // Remove Players that has logged back in
                     if (playerData.PlayerId == identity.IdentityId
                         && identity.LastLogoutTime > playerData.GraceGrantedAt
-                        && GracePlugin.Plugin.Config.AutoRemove)
+                        && GracePlugin.Plugin.Config.AutoRemove
+                        && !playerData.PersistPlayer)
                     {
                         GracePlugin.Plugin.Config.PlayersOnLeave.Remove(playerData);
                         GracePlugin.Plugin.Save();
