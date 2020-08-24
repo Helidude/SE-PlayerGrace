@@ -23,13 +23,6 @@ namespace SE_PlayerGrace
 
         public GraceConfig Config => _config?.Data;
 
-        /// <summary>
-        /// Attach plugin to Torch Server
-        /// </summary>
-        /// <param name="torch"></param>
-
-        /// <inheritdoc />
-
         public override void Init(ITorchBase torch)
         {
             base.Init(torch);
@@ -41,7 +34,7 @@ namespace SE_PlayerGrace
                 Log.Warn("No session manager loaded!");
 
             SetupConfig();
-            Plugin = this;
+            Plugin = this; // Key to threading bug?
         }
 
         private void SessionChanged(ITorchSession session, TorchSessionState state)
@@ -53,11 +46,12 @@ namespace SE_PlayerGrace
                     Task.Run((Action)(() =>
                     {
                         Thread.Sleep(5000);
-                        Helpers.GraceList();
+                        Helpers.RefreshGraceList();
                         Helpers.ApplySession();
                     }));
 
                     break;
+
                 // Runs when server is shutting down
                 case TorchSessionState.Unloading:
                     break;

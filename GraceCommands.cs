@@ -11,7 +11,7 @@ namespace SE_PlayerGrace
     {
         public static readonly Logger Log = LogManager.GetLogger("PlayerGrace");
 
-        [Command("grace toggle", "Toggle AutoRemove State")]
+        [Command("grace toggle", "Toggle Global AutoRemove State")]
         [Permission(MyPromoteLevel.SpaceMaster)]
         public void GraceToggle()
         {
@@ -35,13 +35,14 @@ namespace SE_PlayerGrace
         {
             var playerId = Helpers.GetPlayerIdByName(playerName);
 
-            if (Helpers.GraceList().Any(i => i.PlayerId == playerId) || playerId == 0)
+            if (Helpers.RefreshGraceList().Any(i => i.PlayerId == playerId) || playerId == 0)
             {
                 Context.Respond($"{playerName} already added or does not exist");
                 return;
             }
 
-            Helpers.AddPlayerToConf(new PlayerData // Add the new player
+            // Format input as PlayerData
+            Helpers.AddPlayer(new PlayerData // Add the new player
             {
                 PlayerId = playerId,
                 PlayerName = playerName,
@@ -59,13 +60,14 @@ namespace SE_PlayerGrace
         {
             var playerId = Helpers.GetPlayerIdByName(playerName);
 
-            if (Helpers.GraceList().Any(i => i.PlayerId == playerId) || playerId == 0)
+            if (Helpers.RefreshGraceList().Any(i => i.PlayerId == playerId) || playerId == 0)
             {
                 Context.Respond($"{playerName} already added or does not exist");
                 return;
             }
 
-            Helpers.AddPlayerToConf(new PlayerData // Add the new player
+            // Format input as PlayerData
+            Helpers.AddPlayer(new PlayerData // Add the new player
             {
                 PlayerId = playerId,
                 PlayerName = playerName,
@@ -83,16 +85,17 @@ namespace SE_PlayerGrace
         {
             var playerId = Helpers.GetPlayerIdByName(playerName);
 
-            if (Helpers.GraceList().Any(i => i.PlayerId == playerId) != true || playerId == 0)
+            if (Helpers.RefreshGraceList().Any(i => i.PlayerId == playerId) != true || playerId == 0)
             {
                 Context.Respond($"Could not find player {playerName}");
                 return;
             }
 
-            foreach (var playerData in PlayersLists.GraceList.ToList())
+            foreach (var playerData in Helpers.RefreshGraceList().ToList())
             {
                 if (playerData.PlayerId != playerId) continue;
-                Helpers.RemovePlayerFromConf(playerData);
+                Helpers.RemovePlayer(playerData);
+
                 Context.Respond($"Player {playerName} successfully removed");
                 Log.Info($"{playerName} successfully removed");
             }
@@ -102,14 +105,14 @@ namespace SE_PlayerGrace
         [Permission(MyPromoteLevel.SpaceMaster)]
         public void GraceList()
         {
-            if (Helpers.GraceList().Count == 0)
+            if (Helpers.RefreshGraceList().Count == 0)
             {
                 Context.Respond($"Could not find any players. AutoRemove is {GracePlugin.Plugin.Config.AutoRemove}");
                 return;
             }
 
             Context.Respond($"AutoRemove is {GracePlugin.Plugin.Config.AutoRemove}! Players on leave:");
-            foreach (var players in Helpers.GraceList())
+            foreach (var players in Helpers.RefreshGraceList())
             {
                 Context.Respond($"{players.PlayerName} ");
             }

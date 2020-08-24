@@ -10,22 +10,8 @@ namespace SE_PlayerGrace
     {
         public static readonly Logger Log = LogManager.GetLogger("PlayerGrace");
 
-        public static long GetPlayerIdByName(string name)
-        {
-            if (!long.TryParse(name, out long id))
-            {
-                foreach (var identity in MySession.Static.Players.GetAllIdentities())
-                {
-                    if (identity.DisplayName == name)
-                    {
-                        return identity.IdentityId;
-                    }
-                }
-            }
-
-            return 0;
-        }
-
+        // Applies the GraceList at server start.
+        // Removes players who has logged back in and sets new LastLoginTime to remaining players.
         public static void ApplySession()
         {
             if (GracePlugin.Plugin.Config.PlayersOnLeave == null || MySession.Static == null)
@@ -42,9 +28,9 @@ namespace SE_PlayerGrace
 
                     // Remove Players that has logged back in
                     if (playerData.PlayerId == identity.IdentityId
-                        && identity.LastLogoutTime > playerData.GraceGrantedAt
-                        && GracePlugin.Plugin.Config.AutoRemove
-                        && !playerData.PersistPlayer)
+                        && identity.LastLogoutTime > playerData.GraceGrantedAt // Player has logged back in
+                        && GracePlugin.Plugin.Config.AutoRemove // Global setting
+                        && !playerData.PersistPlayer) // Player Setting
                     {
                         GracePlugin.Plugin.Config.PlayersOnLeave.Remove(playerData);
                         GracePlugin.Plugin.Save();
@@ -54,7 +40,8 @@ namespace SE_PlayerGrace
             }
         }
 
-        public static List<PlayerData> GraceList()
+        // Refresh GraceList for it to reflect the latest changes
+        public static List<PlayerData> RefreshGraceList()
         {
             PlayersLists.GraceList.Clear();
             foreach (var data in GracePlugin.Plugin.Config.PlayersOnLeave)
@@ -72,16 +59,7 @@ namespace SE_PlayerGrace
             return PlayersLists.GraceList;
         }
 
-        public static void RemovePlayerFromConf(PlayerData player)
-        {
-            var itemToRemove = GracePlugin.Plugin.Config.PlayersOnLeave.SingleOrDefault(p => p.PlayerId == player.PlayerId);
-
-            GracePlugin.Plugin.Config.PlayersOnLeave.Remove(itemToRemove);
-            GracePlugin.Plugin.Save();
-            GraceList();
-        }
-
-        public static void AddPlayerToConf(PlayerData player)
+        public static void AddPlayer(PlayerData player)
         {
             GracePlugin.Plugin.Config.PlayersOnLeave.Add(new PlayerData
             {
@@ -92,7 +70,32 @@ namespace SE_PlayerGrace
             });
 
             GracePlugin.Plugin.Save();
-            GraceList();
+            RefreshGraceList();
+        }
+
+        public static void RemovePlayer(PlayerData player)
+        {
+            var itemToRemove = GracePlugin.Plugin.Config.PlayersOnLeave.SingleOrDefault(p => p.PlayerId == player.PlayerId);
+
+            GracePlugin.Plugin.Config.PlayersOnLeave.Remove(itemToRemove);
+            GracePlugin.Plugin.Save();
+            RefreshGraceList();
+        }
+
+        public static long GetPlayerIdByName(string name)
+        {
+            if (!long.TryParse(name, out long id))
+            {
+                foreach (var identity in MySession.Static.Players.GetAllIdentities())
+                {
+                    if (identity.DisplayName == name)
+                    {
+                        return identity.IdentityId;
+                    }
+                }
+            }
+
+            return 0;
         }
     }
 }
