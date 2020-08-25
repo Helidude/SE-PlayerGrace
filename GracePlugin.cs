@@ -41,6 +41,7 @@ namespace SE_PlayerGrace
                 Log.Warn("No session manager loaded!");
 
             SetupConfig();
+            Plugin = this; // Needed for NoGui
         }
 
         private void SessionChanged(ITorchSession session, TorchSessionState state)
@@ -52,7 +53,6 @@ namespace SE_PlayerGrace
                     Task.Run((Action)(() =>
                     {
                         Thread.Sleep(5000);
-                        Helpers.RefreshGraceList();
                         ApplySession();
                     }));
                     break;
@@ -99,7 +99,7 @@ namespace SE_PlayerGrace
 
         // Applies the GraceList at server start.
         // Removes players who has logged back in and sets new LastLoginTime to remaining players.
-        private static void ApplySession()
+        private void ApplySession()
         {
             if (Plugin.Config.PlayersOnLeave == null || MySession.Static == null)
                 return;
@@ -118,6 +118,14 @@ namespace SE_PlayerGrace
                         && Plugin.Config.AutoRemove     // Global Setting
                         && !playerData.PersistPlayer)   // Player Setting
                     {
+                        if (Torch.Config.NoGui)
+                        {
+                            Plugin.Config.PlayersOnLeave.Remove(playerData);
+                            Plugin.Save();
+                            Log.Info($"Player {playerData.PlayerName} removed!");
+                            break;
+                        }
+
                         GraceControl.UiInstance.Dispatcher.Invoke(() => // Make sure this runs on UI thread
                         {
                             Plugin.Config.PlayersOnLeave.Remove(playerData);

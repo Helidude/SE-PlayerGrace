@@ -60,6 +60,7 @@ namespace SE_PlayerGrace
             RefreshGraceList();
         }
 
+        // Get all human players not already added to PlayerGrace
         public static List<MyIdentity> GetAllPlayers()
         {
             if (MySession.Static == null)
@@ -76,6 +77,7 @@ namespace SE_PlayerGrace
                 .OrderBy(i => i.DisplayName)
                 .ToList();
 
+            // Remove players already added to PlayerGrace
             return result.Where(i => (PlayersLists.GraceList.All(g => g.PlayerId != i.IdentityId)))
                 .OrderBy(i => i.DisplayName)
                 .ToList();
