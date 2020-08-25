@@ -10,36 +10,6 @@ namespace SE_PlayerGrace
     {
         public static readonly Logger Log = LogManager.GetLogger("PlayerGrace");
 
-        // Applies the GraceList at server start.
-        // Removes players who has logged back in and sets new LastLoginTime to remaining players.
-        public static void ApplySession()
-        {
-            if (GracePlugin.Plugin.Config.PlayersOnLeave == null || MySession.Static == null)
-                return;
-
-            foreach (MyIdentity identity in MySession.Static.Players.GetAllIdentities())
-            {
-                foreach (var playerData in GracePlugin.Plugin.Config.PlayersOnLeave.ToList())
-                {
-                    if (playerData.PlayerId == identity.IdentityId)
-                    {
-                        identity.LastLoginTime = DateTime.Now;
-                    }
-
-                    // Remove Players that has logged back in
-                    if (playerData.PlayerId == identity.IdentityId
-                        && identity.LastLogoutTime > playerData.GraceGrantedAt // Player has logged back in
-                        && GracePlugin.Plugin.Config.AutoRemove // Global setting
-                        && !playerData.PersistPlayer) // Player Setting
-                    {
-                        GracePlugin.Plugin.Config.PlayersOnLeave.Remove(playerData);
-                        GracePlugin.Plugin.Save();
-                        Log.Info($"Player {playerData.PlayerName} was removed. Last logout was {identity.LastLogoutTime}");
-                    }
-                }
-            }
-        }
-
         // Refresh GraceList for it to reflect the latest changes
         public static List<PlayerData> RefreshGraceList()
         {

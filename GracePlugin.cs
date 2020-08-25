@@ -10,6 +10,8 @@ using Torch.API.Session;
 using Torch.API.Managers;
 using Torch.Session;
 using System.Threading;
+using Sandbox.Game.World;
+using System.Linq;
 
 namespace SE_PlayerGrace
 {
@@ -51,7 +53,7 @@ namespace SE_PlayerGrace
                     {
                         Thread.Sleep(5000);
                         Helpers.RefreshGraceList();
-                        Helpers.ApplySession();
+                        ApplySession();
                     }));
                     break;
 
@@ -92,6 +94,38 @@ namespace SE_PlayerGrace
             catch (IOException e)
             {
                 Log.Warn(e, "Configuration failed to save");
+            }
+        }
+
+        // Applies the GraceList at server start.
+        // Removes players who has logged back in and sets new LastLoginTime to remaining players.
+        private static void ApplySession()
+        {
+            if (Plugin.Config.PlayersOnLeave == null || MySession.Static == null)
+                return;
+
+            foreach (var identity in MySession.Static.Players.GetAllIdentities())
+            {
+                foreach (var playerData in Plugin.Config.PlayersOnLeave.ToList())
+                {
+                    // Apply current DateTime for players in PlayerGrace
+                    if (playerData.PlayerId == identity.IdentityId)
+                        identity.LastLoginTime = DateTime.Now;
+
+                    // Remove Players that has logged back in (if matching criteria)
+                    if (playerData.PlayerId == identity.IdentityId
+                        && identity.LastLogoutTime > playerData.GraceGrantedAt // Player has logged back in
+                        && Plugin.Config.AutoRemove     // Global Setting
+                        && !playerData.PersistPlayer)   // Player Setting
+                    {
+                        GraceControl.UiInstance.Dispatcher.Invoke(() => // Make sure this runs on UI thread
+                        {
+                            Plugin.Config.PlayersOnLeave.Remove(playerData);
+                            Plugin.Save();
+                            Log.Info($"Player {playerData.PlayerName} removed!");
+                        });
+                    }
+                }
             }
         }
     }
