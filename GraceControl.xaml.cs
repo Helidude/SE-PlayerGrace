@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NLog;
+using System;
 using System.Linq;
-using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using Sandbox.Game.World;
-using NLog;
-using System.Threading;
 
 namespace SE_PlayerGrace
 {
     public partial class GraceControl : UserControl
     {
-        public GracePlugin Plugin { get; }
         public static GraceControl UiInstance { get; private set; }
 
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
@@ -30,7 +24,7 @@ namespace SE_PlayerGrace
 
         public GraceControl(GracePlugin plugin) : this()
         {
-            Plugin = plugin;
+            GracePlugin.Plugin = plugin;
             DataContext = plugin.Config;
         }
 

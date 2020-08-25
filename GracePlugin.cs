@@ -15,14 +15,13 @@ namespace SE_PlayerGrace
 {
     public class GracePlugin : TorchPluginBase, IWpfPlugin
     {
-        // Attach NLog
         public static readonly Logger Log = LogManager.GetLogger("PlayerGrace");
+
+        public static GracePlugin Plugin { get; set; }
 
         private GraceControl _control;
 
         public UserControl GetControl() => _control ?? (_control = new GraceControl(this));
-
-        public static GracePlugin Plugin { get; set; }
 
         // Include config
         private Persistent<GraceConfig> _config;
@@ -40,7 +39,6 @@ namespace SE_PlayerGrace
                 Log.Warn("No session manager loaded!");
 
             SetupConfig();
-            Plugin = this;
         }
 
         private void SessionChanged(ITorchSession session, TorchSessionState state)
@@ -55,7 +53,6 @@ namespace SE_PlayerGrace
                         Helpers.RefreshGraceList();
                         Helpers.ApplySession();
                     }));
-
                     break;
 
                 // Runs when server is shutting down
