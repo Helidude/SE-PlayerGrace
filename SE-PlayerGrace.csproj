@@ -63,6 +63,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -95,6 +97,9 @@
   <ItemGroup>
     <Compile Include="GraceCommands.cs" />
     <Compile Include="GraceConfig.cs" />
+    <Compile Include="GraceControl.xaml.cs">
+      <DependentUpon>GraceControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GracePlugin.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="PlayerList.cs" />
@@ -139,6 +144,11 @@
     <Resource Include="manifest.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="GraceControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

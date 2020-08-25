@@ -2,8 +2,10 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using Torch;
 using Torch.API;
+using Torch.API.Plugins;
 using Torch.API.Session;
 using Torch.API.Managers;
 using Torch.Session;
@@ -11,10 +13,14 @@ using System.Threading;
 
 namespace SE_PlayerGrace
 {
-    public class GracePlugin : TorchPluginBase
+    public class GracePlugin : TorchPluginBase, IWpfPlugin
     {
         // Attach NLog
         public static readonly Logger Log = LogManager.GetLogger("PlayerGrace");
+
+        private GraceControl _control;
+
+        public UserControl GetControl() => _control ?? (_control = new GraceControl(this));
 
         public static GracePlugin Plugin { get; set; }
 
@@ -34,7 +40,7 @@ namespace SE_PlayerGrace
                 Log.Warn("No session manager loaded!");
 
             SetupConfig();
-            Plugin = this; // Key to threading bug?
+            Plugin = this;
         }
 
         private void SessionChanged(ITorchSession session, TorchSessionState state)

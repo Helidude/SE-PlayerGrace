@@ -61,15 +61,19 @@ namespace SE_PlayerGrace
 
         public static void AddPlayer(PlayerData player)
         {
-            GracePlugin.Plugin.Config.PlayersOnLeave.Add(new PlayerData
+            GraceControl.UiInstance.Dispatcher.Invoke(() =>
             {
-                PlayerId = player.PlayerId,
-                PlayerName = player.PlayerName,
-                GraceGrantedAt = DateTime.Now,
-                PersistPlayer = player.PersistPlayer
+                GracePlugin.Plugin.Config.PlayersOnLeave.Add(new PlayerData
+                {
+                    PlayerId = player.PlayerId,
+                    PlayerName = player.PlayerName,
+                    GraceGrantedAt = DateTime.Now,
+                    PersistPlayer = player.PersistPlayer
+                });
+
+                GracePlugin.Plugin.Save();
             });
 
-            GracePlugin.Plugin.Save();
             RefreshGraceList();
         }
 
@@ -77,9 +81,34 @@ namespace SE_PlayerGrace
         {
             var itemToRemove = GracePlugin.Plugin.Config.PlayersOnLeave.SingleOrDefault(p => p.PlayerId == player.PlayerId);
 
-            GracePlugin.Plugin.Config.PlayersOnLeave.Remove(itemToRemove);
-            GracePlugin.Plugin.Save();
+            GraceControl.UiInstance.Dispatcher.Invoke(() =>
+            {
+                GracePlugin.Plugin.Config.PlayersOnLeave.Remove(itemToRemove);
+                GracePlugin.Plugin.Save();
+            });
+
             RefreshGraceList();
+        }
+
+        public static List<MyIdentity> GetAllPlayers()
+        {
+            if (MySession.Static == null)
+                return new List<MyIdentity>();
+
+            RefreshGraceList();
+
+            // Populate the list
+            var idents = MySession.Static.Players.GetAllIdentities().ToList();
+            var npcs = MySession.Static.Players.GetNPCIdentities().ToList();
+
+            // Remove NPCs and already added players in Config
+            var result = idents.Where(i => (npcs.All(n => n != i.IdentityId)))
+                .OrderBy(i => i.DisplayName)
+                .ToList();
+
+            return result.Where(i => (PlayersLists.GraceList.All(g => g.PlayerId != i.IdentityId)))
+                .OrderBy(i => i.DisplayName)
+                .ToList();
         }
 
         public static long GetPlayerIdByName(string name)

@@ -11,6 +11,8 @@ namespace SE_PlayerGrace
     {
         public static readonly Logger Log = LogManager.GetLogger("PlayerGrace");
 
+        public GraceControl Plugin => (GraceControl)Context.Plugin;
+
         [Command("grace toggle", "Toggle Global AutoRemove State")]
         [Permission(MyPromoteLevel.SpaceMaster)]
         public void GraceToggle()
