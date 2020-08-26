@@ -121,7 +121,6 @@ namespace SE_PlayerGrace
                         if (Torch.Config.NoGui)
                         {
                             Plugin.Config.PlayersOnLeave.Remove(playerData);
-                            Plugin.Save();
                             Log.Info($"Player {playerData.PlayerName} removed!");
                             break;
                         }
@@ -129,12 +128,13 @@ namespace SE_PlayerGrace
                         GraceControl.UiInstance.Dispatcher.Invoke(() => // Make sure this runs on UI thread
                         {
                             Plugin.Config.PlayersOnLeave.Remove(playerData);
-                            Plugin.Save();
                             Log.Info($"Player {playerData.PlayerName} removed!");
                         });
                     }
                 }
             }
+
+            Plugin.Save();
         }
     }
 }
