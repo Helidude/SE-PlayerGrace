@@ -1,6 +1,8 @@
 ﻿using NLog;
 using System;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -11,10 +13,9 @@ namespace SE_PlayerGrace
         public static GraceControl UiInstance { get; private set; }
 
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
         private PlayerData _selectedDatagridRow = null;
         private static ComboBox comboboxPlayers;
-
-        //public static GraceControl PluginInstance { get; set; }
 
         public GraceControl()
         {
@@ -28,17 +29,19 @@ namespace SE_PlayerGrace
             DataContext = plugin.Config;
         }
 
+        // Gets all players on server and loads them into ComboBox
         private void ComboBoxPlayers_OnLoaded(object sender, RoutedEventArgs e)
         {
-            // Gets all players on server and loads them into ComboBox
             comboboxPlayers = sender as ComboBox;
             if (comboboxPlayers != null)
                 comboboxPlayers.ItemsSource = Helpers.GetAllPlayers().Select(x => x.DisplayName);
         }
 
+        // Events when the "Add" button is pressed
         private void SaveConfig_OnClick(object sender, RoutedEventArgs e)
         {
             var selectedPlayer = ComboBoxPlayers.SelectedValue.ToString();
+
             var playerId = Helpers.GetPlayerIdByName(selectedPlayer);
 
             Helpers.AddPlayer(new PlayerData // Add the new player
@@ -46,13 +49,14 @@ namespace SE_PlayerGrace
                 PlayerId = playerId,
                 PlayerName = selectedPlayer,
                 GraceGrantedAt = DateTime.Now,
-                PersistPlayer = false
-            });
+                PersistPlayer = PlayerPersist.IsChecked.Value
+            }); ;
 
             ComboBoxPlayers.SelectedIndex = -1;
             comboboxPlayers.ItemsSource = Helpers.GetAllPlayers().Select(x => x.DisplayName);
         }
 
+        // Events when the "Delete" button is pressed
         private void Button_Click_Delete(object sender, RoutedEventArgs e)
         {
             if (_selectedDatagridRow == null)
@@ -69,6 +73,7 @@ namespace SE_PlayerGrace
             comboboxPlayers.ItemsSource = Helpers.GetAllPlayers().Select(x => x.DisplayName);
         }
 
+        // Events when the User is selected from ComboBox
         private void ComboBoxPlayers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ButtonSave.IsEnabled = true;
@@ -86,6 +91,7 @@ namespace SE_PlayerGrace
             ButtonDelete.IsEnabled = false;
         }
 
+        // Events when Player is selected from DataGrid
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             DataGrid dg = sender as DataGrid;
